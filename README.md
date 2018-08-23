@@ -11,7 +11,7 @@ I just want to spend less time on setup new webpack projects. Yes, I now about [
 ## 📦 Install
 
 ```sh
-$ yarn add -D webpack-universal-hot-middleware
+$ yarn add -D @exah/webpack-universal-hot-middleware
 ```
 
 
