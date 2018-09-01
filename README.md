@@ -35,7 +35,7 @@ $ yarn add -D @exah/webpack-universal-hot-middleware
       main: './src/client.js'
     },
     output: {
-      path: config.paths.dist,
+      path: config.paths.distClient,
       filename: '[name].js',
       chunkFilename: '[name].js',
       publicPath: '/'
@@ -58,7 +58,7 @@ $ yarn add -D @exah/webpack-universal-hot-middleware
       server: './src/server.js'
     },
     output: {
-      path: config.paths.dist,
+      path: config.paths.distServer,
       publicPath: '/',
       filename: '[name].js',
       libraryTarget: 'commonjs2'
@@ -92,7 +92,6 @@ $ yarn add -D @exah/webpack-universal-hot-middleware
     webpackConfig,
     isDev: config.isDev, // usually `process.env.NODE_ENV !== 'production'`
     isHot: true, // add webpack hot middleware and script to entry?
-    outputPath: config.paths.dist, // output of webpack
     clientEntry: 'main',
     serverEntry: 'server',
     clientStatsFileName: 'clientStats.json',
