@@ -29,16 +29,16 @@ $ yarn add -D @exah/webpack-universal-hot-middleware
   const StatsPlugin = require('stats-webpack-plugin')
 
   const clientConfig = {
-    name: 'client',
+    name: 'client', // required
     target: 'web',
     entry: {
       main: './src/client.js'
     },
     output: {
-      path: config.paths.distClient,
+      path: config.paths.distClient, // required
       filename: '[name].js',
       chunkFilename: '[name].js',
-      publicPath: '/'
+      publicPath: '/' // required
     },
     resolve: {
       alias: {
@@ -47,26 +47,26 @@ $ yarn add -D @exah/webpack-universal-hot-middleware
     },
     // ...
     plugins: config.isProd
-      ? [ new StatsPlugin('clientStats.json', { chunkModules: true }) ]
+      ? [ new StatsPlugin('clientStats.json', { chunkModules: true }) ] // required
       : []
   }
 
   const serverConfig = {
-    name: 'server',
+    name: 'server', // required
     target: 'node',
     entry: {
       server: './src/server.js'
     },
     output: {
-      path: config.paths.distServer,
-      publicPath: '/',
+      path: config.paths.distServer, // required
+      publicPath: '/', // same as in client config
       filename: '[name].js',
       libraryTarget: 'commonjs2'
     },
     // ...
     externals: Object.keys(require('./package.json').dependencies),
     plugins: config.isProd
-      ? [ new StatsPlugin('serverStats.json', { chunkModules: true }) ]
+      ? [ new StatsPlugin('serverStats.json', { chunkModules: true }) ] // required
       : []
   }
 
@@ -102,6 +102,57 @@ $ yarn add -D @exah/webpack-universal-hot-middleware
     console.log(`> Server started at ${config.siteUrl}`)
   )
   ```
+
+
+3. Add `src/client.js`, `src/server.js` (same as in `webpack.config.js`)
+
+  ```js
+  // src/client.js
+  import React from 'react'
+  import ReactDOM from 'react-dom'
+  import { BrowserRouter as Router } from 'react-router-dom'
+  import App from './app'
+
+  // Render app
+  ReactDOM.hydrate((
+    <Router>
+      <App />
+    </Router>
+  ), document.getElementById('app'))
+  ```
+
+  ```js
+  // src/server.js
+  import React from 'react'
+  import { renderToString } from 'react-dom/server'
+  import { StaticRouter as Router } from 'react-router'
+  import App from './app'
+
+  // Render app
+  export default ({ files }) => (req, res, next) => {
+    const appElement = (
+      <Router location={req.url}>
+        <App />
+      </Router>
+    )
+    
+    res.send(html`
+      <!DOCTYPE html>
+      <html class="no-js">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          ${files.css.map(file => html`<link rel="stylesheet" href="${file}" />`)}
+        </head>
+        <body>
+          <div id="app">${renderToString(appElement)}</div>
+          ${files.js.map(file => html`<script src="${file}"></script>`)}
+        </body>
+      </html>
+    `)
+  }
+  ```
+
 
 
 ## 🔗 Inside
